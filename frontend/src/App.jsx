@@ -9,6 +9,7 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 const ActivitiesPage = lazy(() => import('./pages/ActivitiesPage'));
 const GoalsPage = lazy(() => import('./pages/GoalsPage'));
+const MotivationPage = lazy(() => import('./pages/MotivationPage')); 
 
 function App() {
   return (
@@ -37,6 +38,16 @@ function App() {
                 <PrivateRoute>
                   <Suspense fallback={<div style={{ color: '#1E3A5F', textAlign: 'center' }}>Загрузка...</div>}>
                     <GoalsPage />
+                  </Suspense>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/motivation"
+              element={
+                <PrivateRoute>
+                  <Suspense fallback={<div style={{ color: '#1E3A5F', textAlign: 'center' }}>Загрузка...</div>}>
+                    <MotivationPage />
                   </Suspense>
                 </PrivateRoute>
               }

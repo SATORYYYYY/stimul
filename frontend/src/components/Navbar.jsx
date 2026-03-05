@@ -24,18 +24,20 @@ const NavContainer = styled.nav`
 `
 
 const Logo = styled(Link)`
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
   color: #1E3A5F;
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  letter-spacing: -0.5px;
 
   &:hover {
     color: #2C6E63;
   }
-`
+`;
 
 const NavLinks = styled.div`
   display: flex;
@@ -150,7 +152,7 @@ export default function Navbar() {
     <>
       <NavContainer>
         <Logo to="/">
-          <FaHome /> Стимул быть здоровым
+          <FaHome /> СбЗ
         </Logo>
         <NavLinks>
           <StyledLink to="/" className={location.pathname === '/' ? 'active' : ''}>
@@ -161,6 +163,9 @@ export default function Navbar() {
           </StyledLink>
           <StyledLink to="/goals" className={location.pathname === '/goals' ? 'active' : ''}>
             <FaBullseye /> Цели
+          </StyledLink>
+          <StyledLink to="/motivation" className={location.pathname === '/motivation' ? 'active' : ''}>
+             📖 Стимул
           </StyledLink>
           {user ? (
             <UserInfo>

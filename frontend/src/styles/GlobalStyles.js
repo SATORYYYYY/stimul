@@ -9,19 +9,7 @@ export const fadeInUp = keyframes`
     opacity: 1;
     transform: translateY(0);
   }
-`
-
-export const pulse = keyframes`
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 127, 111, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(255, 127, 111, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 127, 111, 0);
-  }
-`
+`;
 
 export const GlobalStyle = createGlobalStyle`
   * {
@@ -32,9 +20,9 @@ export const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background: #F8FAFC; 
+    background: #F8FAFC;
     min-height: 100vh;
-    color: #1E3A5F;       
+    color: #1E3A5F;
   }
 
   #root {
@@ -49,7 +37,8 @@ export const GlobalStyle = createGlobalStyle`
     padding: 0 20px;
   }
 
-  /* скроллбар */
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
+
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -58,10 +47,10 @@ export const GlobalStyle = createGlobalStyle`
     background: #f1f1f1;
   }
   ::-webkit-scrollbar-thumb {
-    background: #A7D7C5;   
+    background: #A7D7C5;
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #2C6E63;    
+    background: #2C6E63;
   }
-`
+`;
