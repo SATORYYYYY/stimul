@@ -9,7 +9,8 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 const ActivitiesPage = lazy(() => import('./pages/ActivitiesPage'));
 const GoalsPage = lazy(() => import('./pages/GoalsPage'));
-const MotivationPage = lazy(() => import('./pages/MotivationPage')); 
+const MotivationPage = lazy(() => import('./pages/MotivationPage'));
+const DailyChallengesPage = lazy(() => import('./pages/DailyChallengesPage')); 
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
               path="/activities"
               element={
                 <PrivateRoute>
-                  <Suspense fallback={<div style={{ color: '#1E3A5F', textAlign: 'center' }}>Загрузка...</div>}>
+                  <Suspense fallback={<div style={{ color: '#7FD60E', textAlign: 'center', padding: '2rem' }}>Загрузка...</div>}>
                     <ActivitiesPage />
                   </Suspense>
                 </PrivateRoute>
@@ -36,7 +37,7 @@ function App() {
               path="/goals"
               element={
                 <PrivateRoute>
-                  <Suspense fallback={<div style={{ color: '#1E3A5F', textAlign: 'center' }}>Загрузка...</div>}>
+                  <Suspense fallback={<div style={{ color: '#7FD60E', textAlign: 'center', padding: '2rem' }}>Загрузка...</div>}>
                     <GoalsPage />
                   </Suspense>
                 </PrivateRoute>
@@ -46,8 +47,18 @@ function App() {
               path="/motivation"
               element={
                 <PrivateRoute>
-                  <Suspense fallback={<div style={{ color: '#1E3A5F', textAlign: 'center' }}>Загрузка...</div>}>
+                  <Suspense fallback={<div style={{ color: '#7FD60E', textAlign: 'center', padding: '2rem' }}>Загрузка...</div>}>
                     <MotivationPage />
+                  </Suspense>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/daily-challenges"
+              element={
+                <PrivateRoute>
+                  <Suspense fallback={<div style={{ color: '#7FD60E', textAlign: 'center', padding: '2rem' }}>Загрузка...</div>}>
+                    <DailyChallengesPage />
                   </Suspense>
                 </PrivateRoute>
               }

@@ -13,7 +13,7 @@ L.Icon.Default.mergeOptions({
 const RouteMap = React.memo(({ position }) => {
   if (!position || !position.lat || !position.lng) return null;
   return (
-    <MapContainer center={[position.lat, position.lng]} zoom={14} style={{ height: '200px', width: '100%' }}>
+    <MapContainer center={[position.lat, position.lng]} zoom={14} style={{ height: '200px', width: '100%' }} attributionControl={false}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <Marker position={[position.lat, position.lng]} />
     </MapContainer>

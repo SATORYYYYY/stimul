@@ -2,65 +2,107 @@ import { useEffect, useState, useCallback } from 'react';
 import api from '../services/api';
 import GoalForm from '../components/GoalForm';
 import styled from 'styled-components';
-import { FaTrash, FaFire, FaCheckCircle, FaPlus } from 'react-icons/fa';
+import { FaTrash, FaFire, FaCheckCircle, FaPlus, FaShoePrints, FaStopwatch, FaTint, FaBullseye } from 'react-icons/fa';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { fadeInUp } from '../styles/GlobalStyles';
+import { fadeInUp, scaleIn, shimmer } from '../styles/GlobalStyles';
 
 const PageContainer = styled.div`
-  padding: 2rem 0;
+  padding: 1rem 0;
+  animation: fadeInUp 0.6s ease-out;
+  width: 100%;
 `;
 
 const Title = styled.h1`
-  font-size: 2rem;
-  color: #1E3A5F;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  color: #7FD60E;
   margin-bottom: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-shadow: 0 0 30px rgba(127, 214, 14, 0.3);
+  flex-wrap: wrap;
+  justify-content: center;
 `;
 
 const CreateButton = styled.button`
-  background: #FF7F6F;
-  color: white;
+  background: linear-gradient(135deg, #7FD60E 0%, #6BC00C 100%);
+  color: #191F11;
   border: none;
-  padding: 0.8rem 2rem;
+  padding: 0.9rem 2rem;
   border-radius: 40px;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   margin-bottom: 2rem;
-  transition: 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(127, 214, 14, 0.4);
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: center;
+    padding: 0.9rem 1.5rem;
+  }
 
   &:hover {
-    background: #e56758;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255,127,111,0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(127, 214, 14, 0.6);
   }
 `;
 
 const GoalsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
-  animation: ${fadeInUp} 0.5s ease-out;
+  animation: fadeInUp 0.6s ease-out 0.3s both;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 481px) and (max-width: 768px) {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
 `;
 
 const GoalCard = styled.div`
-  background: linear-gradient(135deg, #A7D7C5, #6BB39B);
-  border-radius: 25px;
-  padding: 1.5rem;
-  color: #1E3A5F;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 1.8rem;
+  color: #FFFFFF;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  transition: transform 0.2s, opacity 0.2s;
+  gap: 1.2rem;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   opacity: ${props => props.$completed ? 0.7 : 1};
+  border: 1px solid rgba(127, 214, 14, 0.2);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(127, 214, 14, 0.1), transparent);
+    animation: ${shimmer} 3s infinite;
+  }
 
   &:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    border-color: rgba(127, 214, 14, 0.4);
   }
 `;
 
@@ -68,70 +110,87 @@ const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 1;
 `;
 
 const GoalIcon = styled.span`
   font-size: 2rem;
-  background: rgba(255,255,255,0.3);
-  padding: 0.5rem;
-  border-radius: 15px;
+  background: rgba(127, 214, 14, 0.2);
+  padding: 0.8rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7FD60E;
 `;
 
 const StreakBadge = styled.span`
-  background: #FF7F6F;
-  color: white;
-  padding: 0.3rem 1rem;
+  background: rgba(127, 214, 14, 0.3);
+  color: #7FD60E;
+  padding: 0.4rem 1rem;
   border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: bold;
+  font-size: 0.9rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
+  border: 1px solid rgba(127, 214, 14, 0.4);
 `;
 
 const GoalTitle = styled.h3`
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  position: relative;
+  z-index: 1;
 `;
 
 const ProgressContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.2rem;
+  position: relative;
+  z-index: 1;
 `;
 
 const ProgressWrapper = styled.div`
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 0.5rem;
+  margin-top: 0.8rem;
+  position: relative;
+  z-index: 1;
 `;
 
 const QuickAddButton = styled.button`
-  background: #FF7F6F;
+  background: linear-gradient(135deg, #7FD60E 0%, #6BC00C 100%);
   border: none;
-  color: white;
-  width: 40px;
-  height: 40px;
+  color: #191F11;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 5px 10px rgba(255,127,111,0.4);
-  transition: transform 0.2s;
+  box-shadow: 0 4px 12px rgba(127, 214, 14, 0.4);
+  transition: all 0.3s ease;
 
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
+    box-shadow: 0 6px 18px rgba(127, 214, 14, 0.6);
   }
 
   &:disabled {
@@ -142,51 +201,59 @@ const QuickAddButton = styled.button`
 `;
 
 const CompleteButton = styled.button`
-  background: ${props => props.$completed ? '#4caf50' : 'white'};
-  color: ${props => props.$completed ? 'white' : '#1E3A5F'};
-  border: 2px solid #4caf50;
-  width: 40px;
-  height: 40px;
+  background: ${props => props.$completed ? 'rgba(127, 214, 14, 0.3)' : 'rgba(255, 255, 255, 0.1)'};
+  color: ${props => props.$completed ? '#7FD60E' : '#FFFFFF'};
+  border: 2px solid ${props => props.$completed ? '#7FD60E' : 'rgba(127, 214, 14, 0.3)'};
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.3s ease;
 
   &:hover {
-    background: #4caf50;
-    color: white;
+    background: rgba(127, 214, 14, 0.3);
+    color: #7FD60E;
+    border-color: #7FD60E;
+    transform: scale(1.1);
   }
 `;
 
 const DeleteButton = styled.button`
   background: none;
   border: none;
-  color: rgba(0,0,0,0.3);
+  color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
-  font-size: 1.2rem;
-  transition: color 0.2s;
+  font-size: 1.3rem;
+  transition: all 0.3s ease;
+  padding: 0.5rem;
 
   &:hover {
-    color: #d45b4a;
+    color: #ff6b6b;
+    transform: scale(1.1);
   }
 `;
 
 const EmptyMessage = styled.p`
   text-align: center;
-  color: #1E3A5F;
-  font-size: 1.2rem;
-  margin-top: 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.3rem;
+  margin-top: 3rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  border: 2px dashed rgba(127, 214, 14, 0.3);
 `;
 
 const getIcon = (type) => {
   switch(type) {
-    case 'steps': return '👣';
-    case 'duration': return '⏱️';
-    case 'calories': return '🔥';
-    case 'water': return '💧';
-    default: return '🎯';
+    case 'steps': return <FaShoePrints />;
+    case 'duration': return <FaStopwatch />;
+    case 'calories': return <FaFire />;
+    case 'water': return <FaTint />;
+    default: return <FaBullseye />;
   }
 };
 
@@ -227,7 +294,7 @@ export default function GoalsPage() {
   const handleQuickAdd = useCallback(async (goal) => {
     const increment = getIncrement(goal.goal_type);
     let newValue = goal.current_value + increment;
-    if (newValue > goal.target_value) newValue = goal.target_value; 
+    if (newValue > goal.target_value) newValue = goal.target_value;
     const updated = { ...goal, current_value: newValue };
     await api.put(`/goals/${goal.id}/`, updated);
     fetchGoals();
@@ -246,7 +313,7 @@ export default function GoalsPage() {
 
   return (
     <PageContainer>
-      <Title>Мои цели</Title>
+      <Title><FaBullseye /> Мои цели</Title>
       <CreateButton onClick={() => setShowForm(true)}>
         <FaPlus /> Создать цель
       </CreateButton>
@@ -271,32 +338,32 @@ export default function GoalsPage() {
                 </CardHeader>
                 <GoalTitle>
                   {goal.title}
-                  {completed && <FaCheckCircle color="#4caf50" size={18} />}
+                  {completed && <FaCheckCircle color="#7FD60E" size={20} />}
                 </GoalTitle>
                 <ProgressContainer>
                   <ProgressWrapper>
                     <CircularProgressbar
                       value={progressPercent}
-                      text={`${goal.current_value}/${goal.target_value}`}
+                      text={`${Math.round(progressPercent)}%`}
                       styles={buildStyles({
-                        textSize: '20px',
-                        pathColor: completed ? '#4caf50' : '#FF7F6F',
-                        textColor: '#1E3A5F',
-                        trailColor: 'rgba(255,255,255,0.3)',
+                        textSize: '18px',
+                        pathColor: completed ? '#7FD60E' : '#7FD60E',
+                        textColor: '#FFFFFF',
+                        trailColor: 'rgba(255,255,255,0.1)',
                       })}
                     />
                   </ProgressWrapper>
                   <div>
-                    <div>{goal.current_value} / {goal.target_value} {goal.unit}</div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>{goal.current_value} / {goal.target_value} {goal.unit}</div>
                     {!completed && (
-                      <div style={{ fontSize: '0.9rem', color: '#1E3A5F', marginTop: '0.2rem' }}>
+                      <div style={{ fontSize: '0.95rem', color: 'rgba(255, 255, 255, 0.7)', marginTop: '0.3rem' }}>
                         Осталось: {goal.target_value - goal.current_value} {goal.unit}
                       </div>
                     )}
                   </div>
                 </ProgressContainer>
                 <ButtonGroup>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.6rem' }}>
                     {!completed && (
                       <QuickAddButton onClick={() => handleQuickAdd(goal)}>
                         +

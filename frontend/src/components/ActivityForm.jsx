@@ -1,112 +1,131 @@
 import { useState } from 'react';
 import api from '../services/api';
 import styled from 'styled-components';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaWalking, FaRunning as FaRunningIcon, FaDumbbell, FaOm, FaCogs } from 'react-icons/fa';
 import LocationPicker from './LocationPicker';
 
 const Form = styled.form`
-  background: white;
-  border-radius: 16px;
-  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
   margin-bottom: 2rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
   align-items: flex-end;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.2s;
-
-  &:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  }
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transition: all 0.4s ease;
+  border: 1px solid rgba(127, 214, 14, 0.2);
 
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: stretch;
+    padding: 1.5rem;
+    gap: 1rem;
   }
 `;
 
 const Field = styled.div`
-  flex: 1 1 180px;
+  flex: 1 1 200px;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.5rem;
 `;
 
 const Label = styled.label`
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #1E3A5F;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #7FD60E;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 `;
 
 const Input = styled.input`
-  padding: 0.7rem 1rem;
-  border: 1px solid #e0e7ef;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(127, 214, 14, 0.3);
   border-radius: 12px;
-  font-size: 0.95rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  background: #F8FAFC;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
 
   &:focus {
     outline: none;
-    border-color: #2C6E63;
-    box-shadow: 0 0 0 3px rgba(44, 110, 99, 0.1);
+    border-color: #7FD60E;
+    box-shadow: 0 0 0 3px rgba(127, 214, 14, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
   }
 `;
 
 const Select = styled.select`
-  padding: 0.7rem 1rem;
-  border: 1px solid #e0e7ef;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(127, 214, 14, 0.3);
   border-radius: 12px;
-  font-size: 0.95rem;
-  background: #F8FAFC;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.05);
   cursor: pointer;
+  color: #FFFFFF;
+  transition: all 0.3s ease;
 
   &:focus {
     outline: none;
-    border-color: #2C6E63;
-    box-shadow: 0 0 0 3px rgba(44, 110, 99, 0.1);
+    border-color: #7FD60E;
+    box-shadow: 0 0 0 3px rgba(127, 214, 14, 0.2);
+  }
+
+  option {
+    background: #191F11;
+    color: #FFFFFF;
   }
 `;
 
 const TextArea = styled.textarea`
-  padding: 0.7rem 1rem;
-  border: 1px solid #e0e7ef;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(127, 214, 14, 0.3);
   border-radius: 12px;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-family: inherit;
   resize: vertical;
   min-height: 80px;
-  background: #F8FAFC;
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+  transition: all 0.3s ease;
 
   &:focus {
     outline: none;
-    border-color: #2C6E63;
-    box-shadow: 0 0 0 3px rgba(44, 110, 99, 0.1);
+    border-color: #7FD60E;
+    box-shadow: 0 0 0 3px rgba(127, 214, 14, 0.2);
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
   }
 `;
 
 const Button = styled.button`
-  background: #FF7F6F;
-  color: white;
+  background: linear-gradient(135deg, #7FD60E 0%, #6BC00C 100%);
+  color: #191F11;
   border: none;
-  padding: 0.7rem 1.8rem;
+  padding: 0.9rem 2rem;
   border-radius: 40px;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  gap: 0.6rem;
+  transition: all 0.3s ease;
   height: fit-content;
-  box-shadow: 0 4px 8px rgba(255, 127, 111, 0.3);
+  box-shadow: 0 4px 15px rgba(127, 214, 14, 0.4);
 
   &:hover {
-    background: #e56758;
-    box-shadow: 0 6px 12px rgba(255, 127, 111, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(127, 214, 14, 0.6);
   }
 
   &:active {
@@ -138,7 +157,7 @@ export default function ActivityForm({ onActivityAdded }) {
       await api.post('/activities/', payload);
       onActivityAdded();
       setFormData({ activity_type: 'walk', duration: '', date: '', notes: '' });
-      setLocation({ lat: null, lng: null }); 
+      setLocation({ lat: null, lng: null });
     } catch (err) {
       console.error('Ошибка при добавлении активности', err);
     }
@@ -153,11 +172,11 @@ export default function ActivityForm({ onActivityAdded }) {
           onChange={(e) => setFormData({ ...formData, activity_type: e.target.value })}
           required
         >
-          <option value="walk">🚶 Ходьба</option>
-          <option value="run">🏃 Бег</option>
-          <option value="gym">🏋️ Тренажерный зал</option>
-          <option value="yoga">🧘 Йога</option>
-          <option value="other">🔧 Другое</option>
+          <option value="walk">Ходьба</option>
+          <option value="run">Бег</option>
+          <option value="gym">Тренажерный зал</option>
+          <option value="yoga">Йога</option>
+          <option value="other">Другое</option>
         </Select>
       </Field>
 

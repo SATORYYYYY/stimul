@@ -5,17 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import { FaUser, FaEnvelope, FaLock, FaUserPlus } from 'react-icons/fa';
-
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
+import { fadeInUp, scaleIn, pulse } from '../styles/GlobalStyles';
 
 const Container = styled.div`
   min-height: calc(100vh - 80px);
@@ -23,23 +13,32 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  animation: fadeInUp 0.6s ease-out;
 `;
 
 const FormCard = styled.div`
-  background: white;
-  border-radius: 20px;
-  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 3rem;
   width: 100%;
-  max-width: 450px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  animation: ${fadeIn} 0.5s ease-out;
+  max-width: 480px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  animation: ${scaleIn} 0.6s ease-out;
+  border: 1px solid rgba(127, 214, 14, 0.2);
 `;
 
 const Title = styled.h2`
-  font-size: 2rem;
-  color: #333;
+  font-size: 2.5rem;
+  color: #7FD60E;
   margin-bottom: 2rem;
   text-align: center;
+  font-weight: 700;
+  text-shadow: 0 0 30px rgba(127, 214, 14, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
 `;
 
 const Form = styled.form`
@@ -54,92 +53,113 @@ const InputGroup = styled.div`
 
 const Icon = styled.div`
   position: absolute;
-  left: 15px;
+  left: 18px;
   top: 50%;
   transform: translateY(-50%);
-  color: #999;
+  color: #7FD60E;
+  font-size: 1.1rem;
   z-index: 1;
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 0.8rem 1rem 0.8rem 2.8rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  padding: 1rem 1rem 1rem 3rem;
+  border: 1px solid rgba(127, 214, 14, 0.3);
+  border-radius: 12px;
   font-size: 1rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
 
   &:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    border-color: #7FD60E;
+    box-shadow: 0 0 0 3px rgba(127, 214, 14, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
   }
 `;
 
 const ErrorText = styled.p`
   color: #ff6b6b;
-  font-size: 0.85rem;
-  margin-top: 0.3rem;
+  font-size: 0.9rem;
+  margin-top: 0.4rem;
   margin-left: 0.5rem;
+  font-weight: 500;
 `;
 
-const pulse = keyframes`
-  0% {
-    box-shadow: 0 0 0 0 rgba(102,126,234,0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(102,126,234,0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(102,126,234,0);
-  }
-`;
 const Button = styled.button`
-  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);  /* изменено */
-  color: white;
+  background: linear-gradient(135deg, #7FD60E 0%, #6BC00C 100%);
+  color: #191F11;
   border: none;
   padding: 1rem;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 0.6rem;
+  transition: all 0.3s ease;
   margin-top: 0.5rem;
+  box-shadow: 0 4px 15px rgba(127, 214, 14, 0.4);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);  /* обновлён */
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(127, 214, 14, 0.6);
     animation: ${pulse} 1.5s infinite;
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 `;
 
 const LinkText = styled.p`
   text-align: center;
   margin-top: 1.5rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
 
   a {
-    color: #4caf50;          /* изменено */
+    color: #7FD60E;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
+    transition: all 0.3s ease;
 
     &:hover {
       text-decoration: underline;
+      text-shadow: 0 0 10px rgba(127, 214, 14, 0.5);
     }
   }
 `;
 
-const schema = yup.object({
-  username: yup.string().required('Имя пользователя обязательно'),
-  email: yup.string().email('Некорректный email').required('Email обязателен'),
-  password: yup.string().min(6, 'Пароль должен быть не менее 6 символов').required('Пароль обязателен'),
-  password2: yup.string().oneOf([yup.ref('password'), null], 'Пароли должны совпадать').required('Подтвердите пароль'),
-  first_name: yup.string(),
-  last_name: yup.string(),
+const schema = yup.object().shape({
+  username: yup.string()
+    .required('Имя пользователя обязательно')
+    .min(3, 'Имя пользователя должно содержать минимум 3 символа')
+    .max(20, 'Имя пользователя должно содержать максимум 20 символов')
+    .matches(/^[a-zA-Z0-9_-]+$/, 'Имя пользователя может содержать только буквы, цифры, подчеркивания и дефисы'),
+  email: yup.string()
+    .nullable()
+    .email('Некорректный формат email'),
+  password: yup.string()
+    .required('Пароль обязателен')
+    .min(6, 'Пароль должен содержать минимум 6 символов')
+    .max(128, 'Пароль должен содержать максимум 128 символов'),
+  password2: yup.string()
+    .oneOf([yup.ref('password'), null], 'Пароли не совпадают')
+    .required('Подтвердите пароль'),
+  first_name: yup.string()
+    .nullable()
+    .max(30, 'Имя должно содержать максимум 30 символов'),
+  last_name: yup.string()
+    .nullable()
+    .max(30, 'Фамилия должна содержать максимум 30 символов'),
 });
 
 export default function RegisterPage() {
@@ -155,7 +175,41 @@ export default function RegisterPage() {
       alert('Регистрация успешна! Теперь вы можете войти.');
       navigate('/login');
     } catch (error) {
-      alert('Ошибка регистрации. Возможно, пользователь уже существует.');
+      console.error('Ошибка регистрации:', error);
+
+      let errorMessage = 'Ошибка регистрации. Попробуйте снова.';
+
+      if (error.response) {
+        // Ошибка от сервера
+        const { data, status } = error.response;
+
+        if (status === 400) {
+          // Ошибка валидации
+          if (data.username) {
+            errorMessage = data.username[0];
+          } else if (data.email) {
+            errorMessage = data.email[0];
+          } else if (data.password) {
+            errorMessage = data.password[0];
+          } else if (data.non_field_errors) {
+            errorMessage = data.non_field_errors[0];
+          } else if (typeof data === 'string') {
+            errorMessage = data;
+          } else if (data.detail) {
+            errorMessage = data.detail;
+          }
+        } else if (status === 404) {
+          errorMessage = 'API endpoint не найден. Проверьте подключение к серверу.';
+        } else if (status === 409) {
+          errorMessage = 'Пользователь с такими данными уже существует.';
+        } else if (status === 500) {
+          errorMessage = 'Ошибка сервера. Попробуйте позже.';
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      alert(errorMessage);
     }
   };
 

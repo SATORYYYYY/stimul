@@ -11,6 +11,68 @@ export const fadeInUp = keyframes`
   }
 `;
 
+export const fadeInDown = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+export const fadeInLeft = keyframes`
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`;
+
+export const fadeInRight = keyframes`
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`;
+
+export const scaleIn = keyframes`
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+`;
+
+export const pulse = keyframes`
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+`;
+
+export const shimmer = keyframes`
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+`;
+
 export const GlobalStyle = createGlobalStyle`
   * {
     margin: 0;
@@ -20,9 +82,9 @@ export const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background: #F8FAFC;
+    background: linear-gradient(135deg, #191F11 0%, #1a2213 100%);
     min-height: 100vh;
-    color: #1E3A5F;
+    color: #FFFFFF;
   }
 
   #root {
@@ -40,17 +102,32 @@ export const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
 
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
+
   ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #191F11;
+    border-radius: 10px;
   }
+
   ::-webkit-scrollbar-thumb {
-    background: #A7D7C5;
-    border-radius: 4px;
+    background: linear-gradient(180deg, #7FD60E 0%, #6BC00C 100%);
+    border-radius: 10px;
+    border: 2px solid #191F11;
   }
+
   ::-webkit-scrollbar-thumb:hover {
-    background: #2C6E63;
+    background: linear-gradient(180deg, #8FE71E 0%, #7FD60E 100%);
+  }
+
+  ::selection {
+    background: #7FD60E;
+    color: #191F11;
+  }
+
+  ::-moz-selection {
+    background: #7FD60E;
+    color: #191F11;
   }
 `;

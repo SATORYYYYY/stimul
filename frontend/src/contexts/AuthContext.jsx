@@ -27,12 +27,38 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   const login = async (username, password) => {
-    const response = await api.post('/token/', { username, password })
-    const { access, refresh } = response.data
-    localStorage.setItem('accessToken', access)
-    localStorage.setItem('refreshToken', refresh)
-    const profileRes = await api.get('/users/profile/')
-    setUser(profileRes.data)
+    try {
+      const response = await api.post('/token/', { username, password })
+      const { access, refresh } = response.data
+      localStorage.setItem('accessToken', access)
+      localStorage.setItem('refreshToken', refresh)
+      const profileRes = await api.get('/users/profile/')
+      setUser(profileRes.data)
+    } catch (error) {
+      console.error('Login error:', error)
+
+      let errorMessage = 'Ошибка входа. Проверьте данные.'
+
+      if (error.response) {
+        const { data, status } = error.response
+
+        if (status === 401) {
+          errorMessage = 'Неверное имя пользователя или пароль'
+        } else if (status === 400) {
+          if (data.detail) {
+            errorMessage = data.detail
+          } else if (data.non_field_errors) {
+            errorMessage = data.non_field_errors[0]
+          } else if (typeof data === 'string') {
+            errorMessage = data
+          }
+        }
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+
+      throw new Error(errorMessage)
+    }
   }
 
   const logout = () => {
@@ -42,7 +68,13 @@ export const AuthProvider = ({ children }) => {
   }
 
   const register = async (userData) => {
-    await api.post('/users/register/', userData)
+    try {
+      const response = await api.post('/users/register/', userData)
+      return response
+    } catch (error) {
+      console.error('Register error:', error)
+      throw error // Пробрасываем ошибку для обработки в компоненте
+    }
   }
 
   return (
