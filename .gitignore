@@ -1,9 +1,10 @@
 # Backend
 backend/venv/
-backend/__pycache__/
-backend/*/migrations/
+__pycache__/
+*.pyc
 backend/db.sqlite3
 backend/.env
+backend/staticfiles/
 
 # Frontend
 frontend/node_modules/

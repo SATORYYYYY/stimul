@@ -1,0 +1,62 @@
+# Render Blueprint for the "Стимул быть здоровым" project.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# This provisions three resources:
+#   1. stimul-db        - managed PostgreSQL database
+#   2. stimul-backend   - Django REST API (gunicorn + WhiteNoise)
+#   3. stimul-frontend  - React/Vite single-page app served as a static site
+
+databases:
+  - name: stimul-db
+    plan: free
+    databaseName: stimul
+    user: stimul
+
+services:
+  # ---------------- Backend (Django REST API) ----------------
+  - type: web
+    name: stimul-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn backend.wsgi:application"
+    healthCheckPath: /admin/login/
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stimul-db
+          property: connectionString
+      # RENDER_EXTERNAL_HOSTNAME is injected automatically and added to ALLOWED_HOSTS.
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      # URL of the frontend static site (used for CORS + CSRF). Update if you
+      # change the frontend service name.
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://stimul-frontend.onrender.com"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://stimul-frontend.onrender.com"
+
+  # ---------------- Frontend (React/Vite static site) ----------------
+  - type: web
+    name: stimul-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: ./dist
+    envVars:
+      # Base URL of the backend API (must include the trailing /api).
+      # Update if you change the backend service name.
+      - key: VITE_API_BASE_URL
+        value: "https://stimul-backend.onrender.com/api"
+    routes:
+      # SPA fallback so client-side routes (e.g. /login) resolve to index.html.
+      - type: rewrite
+        source: /*
+        destination: /index.html

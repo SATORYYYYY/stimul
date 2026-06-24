@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import api from '../services/api'
 import styled from 'styled-components'
-import { FaHome, FaRunning, FaBullseye, FaSignInAlt, FaUserPlus, FaSignOutAlt, FaUserCircle, FaBook, FaShoePrints, FaTint, FaFire, FaTrophy } from 'react-icons/fa'
+import { FaHome, FaRunning, FaBullseye, FaSignInAlt, FaUserPlus, FaSignOutAlt, FaUserCircle, FaBook, FaListUl, FaCheckCircle, FaFire, FaTrophy } from 'react-icons/fa'
 
 const NavContainer = styled.nav`
   background: rgba(25, 31, 17, 0.95);
@@ -195,19 +197,33 @@ const StatusBar = styled.div`
 export default function Navbar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation() 
+  const location = useLocation()
+  const [dailyStats, setDailyStats] = useState({ total: 0, completed: 0, progress: 0 })
 
   const handleLogout = () => {
     logout()
     navigate('/login')
   }
 
-  const dailyStats = {
-    steps: 6342,
-    water: 4,
-    waterGoal: 8,
-    goalProgress: 70
-  }
+  useEffect(() => {
+    if (!user) {
+      setDailyStats({ total: 0, completed: 0, progress: 0 })
+      return
+    }
+    let cancelled = false
+    api.get('/daily-challenges/today/')
+      .then(({ data }) => {
+        if (cancelled) return
+        const total = data.length
+        const completed = data.filter((c) => c.is_completed).length
+        const progress = total
+          ? Math.round(data.reduce((sum, c) => sum + (c.progress_percentage || 0), 0) / total)
+          : 0
+        setDailyStats({ total, completed, progress })
+      })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [user, location.pathname])
 
   return (
     <>
@@ -247,9 +263,9 @@ export default function Navbar() {
       </NavContainer>
       {user && (
         <StatusBar>
-          <span><FaShoePrints /> {dailyStats.steps.toLocaleString()} шагов</span>
-          <span><FaTint /> {dailyStats.water}/{dailyStats.waterGoal} стаканов</span>
-          <span><FaFire /> цель дня: {dailyStats.goalProgress}%</span>
+          <span><FaListUl /> заданий сегодня: {dailyStats.total}</span>
+          <span><FaCheckCircle /> выполнено: {dailyStats.completed}/{dailyStats.total}</span>
+          <span><FaFire /> прогресс дня: {dailyStats.progress}%</span>
         </StatusBar>
       )}
     </>
