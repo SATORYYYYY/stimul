@@ -1,11 +1,18 @@
-import React, { useEffect, useState, useCallback, lazy, Suspense } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import api from '../services/api';
 import ActivityForm from '../components/ActivityForm';
+import RouteMap from '../components/RouteMap';
 import styled from 'styled-components';
 import { FaTrash, FaMapMarkedAlt, FaRunning, FaEdit } from 'react-icons/fa';
 import { fadeInUp, scaleIn } from '../styles/GlobalStyles';
 
-const RouteMap = lazy(() => import('../components/RouteMap'));
+const ACTIVITY_TYPE_LABELS = {
+  walk: 'Ходьба',
+  run: 'Бег',
+  gym: 'Тренажерный зал',
+  yoga: 'Йога',
+  other: 'Другое',
+};
 
 const PageContainer = styled.div`
   padding: 1rem 0;
@@ -178,18 +185,13 @@ const EmptyMessage = styled.p`
 `;
 
 const ActivityItem = React.memo(({ act, onDelete, onToggleMap, isMapOpen }) => {
-  const sampleRoute = [
-    [55.7558, 37.6176],
-    [55.7568, 37.6186],
-    [55.7578, 37.6196],
-    [55.7588, 37.6206],
-  ];
+  const hasLocation = act.latitude != null && act.longitude != null;
 
   return (
     <div>
       <ActivityItemStyled>
         <ActivityInfo>
-          <ActivityType><FaRunning /> {act.activity_type}</ActivityType>
+          <ActivityType><FaRunning /> {ACTIVITY_TYPE_LABELS[act.activity_type] || act.activity_type}</ActivityType>
           <ActivityMeta>
             <span>{act.duration} мин</span>
             <span>{act.date}</span>
@@ -197,17 +199,17 @@ const ActivityItem = React.memo(({ act, onDelete, onToggleMap, isMapOpen }) => {
           {act.notes && <Notes><FaEdit /> {act.notes}</Notes>}
         </ActivityInfo>
         <Actions>
-          <MapButton onClick={() => onToggleMap(act.id)} title="Показать маршрут">
-            <FaMapMarkedAlt />
-          </MapButton>
+          {hasLocation && (
+            <MapButton onClick={() => onToggleMap(act.id)} title="Показать местоположение">
+              <FaMapMarkedAlt />
+            </MapButton>
+          )}
           <IconButton onClick={() => onDelete(act.id)} title="Удалить"><FaTrash /></IconButton>
         </Actions>
       </ActivityItemStyled>
-      {isMapOpen && (
+      {isMapOpen && hasLocation && (
         <MapPreview>
-          <Suspense fallback={<div style={{ textAlign: 'center', color: '#7FD60E', padding: '2rem' }}>Загрузка карты...</div>}>
-            <RouteMap route={sampleRoute} />
-          </Suspense>
+          <RouteMap position={{ lat: act.latitude, lng: act.longitude }} />
         </MapPreview>
       )}
     </div>
